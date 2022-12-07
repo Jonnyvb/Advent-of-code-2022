@@ -6,7 +6,7 @@ if __name__ == "__main__":
             for char in line:
                 charCount += 1
                 charBuffer.append(char)
-                if len(charBuffer) > 4:
+                if len(charBuffer) > 14:
                     charBuffer.pop(0)
                     if len(set(charBuffer)) == len(charBuffer):
                         break
