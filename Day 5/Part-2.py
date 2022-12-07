@@ -1,6 +1,5 @@
 if __name__ == "__main__":
     with open("Input.txt") as f:
-        overlapCount = 0
         crateStack = []
         for line in f:
             line = line.replace("\n", " ")
