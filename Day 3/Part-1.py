@@ -1,6 +1,6 @@
 
 if __name__ == "__main__":
-    with open("./Day 3/Input.txt") as f:
+    with open("Input.txt") as f:
         priority = 0
         for line in f:
             line = line.replace("\n", "")

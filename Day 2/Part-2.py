@@ -16,7 +16,7 @@
 # Win = 6pt
 
 if __name__ == "__main__":
-    with open("./Day 2/Input.txt") as f:
+    with open("Input.txt") as f:
         score = 0
         for line in f:
             line = line.replace("\n", "")

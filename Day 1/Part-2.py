@@ -8,7 +8,7 @@ def OrderdedInsert(insertList, value):
             break
         
 if __name__ == "__main__":
-    with open(r"./Day 1/Day-1-Input.txt") as f:
+    with open("Input.txt") as f:
         maxCalories = [0, 0, 0]
         thisElfCalories = 0
         for line in f:
