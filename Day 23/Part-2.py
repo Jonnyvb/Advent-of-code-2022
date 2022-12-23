@@ -5,7 +5,21 @@ def Print_Elf_Locations(elves):
     min_y = min([elf["current_location"][1] for elf in elves])
     max_y = max([elf["current_location"][1] for elf in elves])
 
+    print("    ", end="")
+    for x in range(min_x, max_x + 1):
+        print(str(x).rjust(3, " ")[0], end="")
+    print()
+    print("    ", end="")
+    for x in range(min_x, max_x + 1):
+        print(str(x).rjust(3, " ")[1], end="")
+    print()
+    print("    ", end="")
+    for x in range(min_x, max_x + 1):
+        print(str(x).rjust(3, " ")[2], end="")
+    print()
+
     for y in range(min_y, max_y + 1):
+        print(f"{y:02d}: ", end="")
         for x in range(min_x, max_x + 1):
             if (x, y) in current_elf_locations:
                 print("#", end="")
@@ -18,11 +32,11 @@ from collections import Counter
 
 if __name__ == "__main__":
     elves = []
-    with open("./Day 23/Input.txt") as f:
+    with open("Input.txt") as f:
         for i, line in enumerate(f):
             for j, char in enumerate(line):
                 if char == "#":
-                     # Store the elf's current location and its intended next one
+                    # Store the elf's current location and its intended next one
                     elves.append({"current_location": (j, i), "proposed_location": (j, i)})
     
     # Store next direction, 0 for N, 1 for S, 2 for W, 3 for E
@@ -73,19 +87,17 @@ if __name__ == "__main__":
                     proposed_moves_counter[E] += 1
                     break
 
-            if elf["proposed_location"] != elf["current_location"] and elf["proposed_location"] in current_elf_locations:
-                pass
-
         # Now check if the elves can make the moves they proposed
         if len(proposed_moves_counter) != 0:
             for elf in elves:
                 current_location = elf["current_location"]
                 proposed_location = elf["proposed_location"]
                 if proposed_location != current_location and proposed_moves_counter[proposed_location] == 1:
-                    
                     current_elf_locations.remove(current_location)
                     elf["current_location"] = proposed_location
                     current_elf_locations.add(proposed_location)
+                else:
+                    elf["proposed_location"] = elf["current_location"]
 
         # Next round we'll rotate the order we look at the directions in (move the first to last)
         round_count += 1
