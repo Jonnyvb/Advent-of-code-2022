@@ -22,9 +22,9 @@ if __name__ == "__main__":
                 if char == "#":
                      # Sotre next direction, 0 for N, 1 for S, 2 for W, 3 for E
                      # followed by the elf's next proposed move
-                    elves.append({"current_location": (j, i), "proposed_location": (j, i), "direction": 0})
+                    elves.append({"current_location": (j, i), "proposed_location": (j, i)})
 
-    #Print_Elf_Locations(elves)
+    elf_direction = 0
 
     # The elves want to do 10 round
     for _ in range(10):
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         current_elf_locations = [elf["current_location"] for elf in elves]
         for elf in elves:
             elf_location = elf["current_location"]
-            elf_direction = elf["direction"]
+
             # Find all the coordinates around this elf
             N = (elf_location[0], elf_location[1] - 1)
             NE = (elf_location[0] + 1, elf_location[1] - 1)
@@ -46,7 +46,6 @@ if __name__ == "__main__":
 
             # Firstly, should this elf try to move at all (are all surrounfing squares empty)
             if not any(location in current_elf_locations for location in [N, NE, E, SE, S, SW, W, NW]):
-                elf["direction"] = (elf_direction + 1) % 4
                 continue
 
             # If we should move, we then need to check which direction we can move in
@@ -67,9 +66,6 @@ if __name__ == "__main__":
                     elf["proposed_location"] = E
                     proposed_moves.append(E)
                     break
-
-            # Next time we'll rotate the order we look at the directions in (move the first to last)
-            elf["direction"] = (elf_direction + 1) % 4
         
         # If no elf wants to move, we're done
         if len(proposed_moves) == 0:
@@ -77,15 +73,16 @@ if __name__ == "__main__":
 
         # Now check if the elves can make the moves they proposed
         for elf in elves:
+            current_location = elf["current_location"]
             proposed_location = elf["proposed_location"]
-            proposed_move_count = proposed_moves.count(proposed_location)
-            if not proposed_move_count > 1:
-                elf["current_location"] = proposed_location
+            if proposed_location != current_location:
+                proposed_move_count = proposed_moves.count(proposed_location)
+                if proposed_move_count == 1:
+                    elf["current_location"] = proposed_location
 
-        #Print_Elf_Locations(elves)
-        #input()
+        # Next round we'll rotate the order we look at the directions in (move the first to last)
+        elf_direction = (elf_direction + 1) % 4
 
-    
     current_elf_locations = [elf["current_location"] for elf in elves]
     min_x = min([elf["current_location"][0] for elf in elves])
     max_x = max([elf["current_location"][0] for elf in elves])
@@ -93,14 +90,7 @@ if __name__ == "__main__":
     max_y = max([elf["current_location"][1] for elf in elves])
 
     rectangle_area = (max_x - min_x + 1) * (max_y - min_y + 1)
-    empty_squares = rectangle_area - len(elves)
+    empty_square_count = rectangle_area - len(elves)
 
-    print(min_x)    
-    print(max_x)
-    print(min_y)
-    print(max_y)
-    print(empty_squares)
-
-    # 3960 is too high
-        
+    print(empty_square_count)        
     
