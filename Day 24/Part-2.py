@@ -1,50 +1,42 @@
 if __name__ == "__main__":
-    maze = []
     north_blizzards = []
     east_blizzards = []
     south_blizzards = []
     west_blizzards = []
-    visitable_locations = []
+    visitable_locations = set()
     with open("Input.txt") as f:
         for y, line in enumerate(f):
             line = line.strip()
-            maze.append([])
             for x, char in enumerate(line):
                 if char == "^":
-                    maze[-1].append(".")
                     north_blizzards.append((x, y))
-                    visitable_locations.append((x, y))
+                    visitable_locations.add((x, y))
                 elif char == ">":
-                    maze[-1].append(".")
                     east_blizzards.append((x, y))
-                    visitable_locations.append((x, y))
+                    visitable_locations.add((x, y))
                 elif char == "v":
-                    maze[-1].append(".")
                     south_blizzards.append((x, y))
-                    visitable_locations.append((x, y))
+                    visitable_locations.add((x, y))
                 elif char == "<":
-                    maze[-1].append(".")
                     west_blizzards.append((x, y))
-                    visitable_locations.append((x, y))
+                    visitable_locations.add((x, y))
                 elif char == ".":
-                    maze[-1].append(".")
-                    visitable_locations.append((x, y))
-                else:
-                    maze[-1].append(char)
+                    visitable_locations.add((x, y))
+
+    maze_width = max([location[0] for location in visitable_locations])
+    maze_height = max([location[1] for location in visitable_locations])
 
     start_location = (1, 0)
-    end_location = (len(maze[0]) - 2, len(maze) - 1)
+    end_location = (maze_width, maze_height)
     target_location = end_location
-
-    max_x = len(maze[0]) - 2
-    max_y = len(maze) - 2
     
     end_reached = False
     locations_to_check = [start_location]
     seen_states = set()
     minutes_needed = 0
 
-    seen_states.add((start_location, frozenset(north_blizzards), frozenset(south_blizzards), frozenset(east_blizzards), frozenset(west_blizzards)))
+    blizzard_period = (maze_height - 1) * (maze_width - 1)
+    seen_states.add((start_location, minutes_needed % blizzard_period))
 
     trip_counter = 1
 
@@ -53,29 +45,29 @@ if __name__ == "__main__":
 
         # Move all the blizzards around
         for i, blizzard in enumerate(north_blizzards):
-           if blizzard[1] == 1: new_y = max_y
+           if blizzard[1] == 1: new_y = maze_height - 1
            else: new_y = blizzard[1] - 1
            north_blizzards[i] = (blizzard[0], new_y)
 
         for i, blizzard in enumerate(south_blizzards):
-           if blizzard[1] == max_y: new_y = 1
+           if blizzard[1] == maze_height - 1: new_y = 1
            else: new_y = blizzard[1] + 1
            south_blizzards[i] = (blizzard[0], new_y)
 
         for i, blizzard in enumerate(east_blizzards):
-           if blizzard[0] == max_x: new_x = 1
+           if blizzard[0] == maze_width: new_x = 1
            else: new_x = blizzard[0] + 1
            east_blizzards[i] = (new_x, blizzard[1])
 
         for i, blizzard in enumerate(west_blizzards):
-           if blizzard[0] == 1: new_x = max_x
+           if blizzard[0] == 1: new_x = maze_width
            else: new_x = blizzard[0] - 1
            west_blizzards[i] = (new_x, blizzard[1])
 
-        NF = frozenset(north_blizzards)
-        SF = frozenset(south_blizzards)
-        EF = frozenset(east_blizzards)
-        WF = frozenset(west_blizzards)
+        NF = set(north_blizzards)
+        SF = set(south_blizzards)
+        EF = set(east_blizzards)
+        WF = set(west_blizzards)
             
         # Check each possible direction move, or wait
         current_locations = locations_to_check
@@ -94,7 +86,7 @@ if __name__ == "__main__":
                 else:
                     trip_counter += 1
                     seen_states = set()
-                    seen_states.add((target_location, NF, SF, EF, WF))
+                    seen_states.add((target_location, minutes_needed % blizzard_period))
                     locations_to_check = [target_location]
                     if target_location == end_location: target_location = start_location
                     else: target_location = end_location
@@ -108,24 +100,24 @@ if __name__ == "__main__":
             stay_still = not location in NF and not location in SF and not location in EF and not location in WF and location in visitable_locations
           
             # Check if we've seen the state we'll end up in if we take the move
-            if move_north and not (move_north, NF, SF, EF, WF) in seen_states:
+            if move_north and not (move_north, minutes_needed % blizzard_period) in seen_states:
                 locations_to_check.add(N)
-                seen_states.add((N, NF, SF, EF, WF))
+                seen_states.add((N, minutes_needed % blizzard_period))
 
-            if move_south and not (move_south, NF, SF, EF, WF) in seen_states:
+            if move_south and not (move_south, minutes_needed % blizzard_period) in seen_states:
                 locations_to_check.add(S)
-                seen_states.add((S, NF, SF, EF, WF))
+                seen_states.add((S, minutes_needed % blizzard_period))
 
-            if move_east and not (move_east, NF, SF, EF, WF) in seen_states:
+            if move_east and not (move_east, minutes_needed % blizzard_period) in seen_states:
                 locations_to_check.add(E)
-                seen_states.add((E, NF, SF, EF, WF))
+                seen_states.add((E, minutes_needed % blizzard_period))
 
-            if move_west and not (move_west, NF, SF, EF, WF) in seen_states:
+            if move_west and not (move_west, minutes_needed % blizzard_period) in seen_states:
                 locations_to_check.add(W)
-                seen_states.add((W, NF, SF, EF, WF))
+                seen_states.add((W, minutes_needed % blizzard_period))
 
-            if stay_still and not (stay_still, NF, SF, EF, WF) in seen_states:
+            if stay_still and not (stay_still, minutes_needed % blizzard_period) in seen_states:
                 locations_to_check.add(location)
-                seen_states.add((location, NF, SF, EF, WF))            
+                seen_states.add((location, minutes_needed % blizzard_period))            
 
     print(minutes_needed)
